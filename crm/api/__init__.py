@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from frappe.core.api.file import get_max_file_size
 from frappe.translate import get_all_translations
 from frappe.utils import cstr, split_emails, validate_email_address
-from frappe.utils.modules import get_modules_from_all_apps_for_user
+from frappe.modules import get_modules_from_all_apps_for_user
 from frappe.utils.telemetry import POSTHOG_HOST_FIELD, POSTHOG_PROJECT_FIELD
 
 
@@ -59,23 +59,22 @@ def get_posthog_settings():
 		"telemetry_site_age": frappe.utils.telemetry.site_age(),
 	}
 
-
 def check_app_permission():
-	if frappe.session.user == "Administrator":
-		return True
+    if frappe.session.user == "Administrator":
+        return True
 
-	allowed_modules = get_modules_from_all_apps_for_user()
-	allowed_modules = [x["module_name"] for x in allowed_modules]
-	if "FCRM" not in allowed_modules:
-		return False
+    allowed_modules = get_modules_from_all_apps_for_user()
+    allowed_modules = [x["module_name"] for x in allowed_modules]
+    if "FCRM" not in allowed_modules:
+        return False
 
-	roles = frappe.get_roles()
-	if any(
-		role in ["System Manager", "Sales User", "Sales Manager"] for role in roles
-	):
-		return True
+    roles = frappe.get_roles()
+    if any(
+        role in ["System Manager", "Sales User", "Sales Manager"] for role in roles
+    ):
+        return True
 
-	return False
+    return False
 
 
 @frappe.whitelist(allow_guest=True)
